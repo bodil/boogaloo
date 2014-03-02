@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>hai lol</title>
+    <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" type="text/css" href="game.css">
+    <script type="text/javascript" src="lib/traceur-runtime.js"></script>
+    <script type="text/javascript" src="lib/mousetrap.js"></script>
+    <script type="text/javascript" src="lib/rx.js"></script>
+    <script type="text/javascript" src="lib/rx.async.js"></script>
+    <script type="text/javascript" src="lib/rx.binding.js"></script>
+    <script type="text/javascript" src="lib/rx.time.js"></script>
+    <script type="text/javascript" src="lib/rx.coincidence.js"></script>
+  </head>
+  <body>
+    <div id="canvas">
+      <div class="ground"></div>
+      <div id="pinkie"></div>
+    </div>
+
+    <script type="text/javascript">
+  (function() {
+    function resizeCanvas() {
+      var canvas = document.getElementById("canvas");
+      var scale = window.innerHeight / canvas.clientHeight;
+      canvas.style.mozTransform = "scale(" + scale + ")";
+      canvas.style.webkitTransform = "scale(" + scale + ")";
+      canvas.style.transform = "scale(" + scale + ")";
+      canvas.style.width = (window.innerWidth / scale) + "px";
+    }
+
+    resizeCanvas();
+    window.addEventListener("resize", resizeCanvas);
+
+    function toArray(indexable) {
+      var out = [], l = indexable.length, i;
+      for (i = 0; i < l; i++) {
+        out.push(indexable[i]);
+      }
+      return out;
+    }
+
+    function bounds(node) {
+      var b = { x1: node.offsetLeft, y1: node.offsetTop };
+      b.x2 = b.x1 + node.offsetWidth;
+      b.y2 = b.y1 + node.offsetHeight;
+      // Add some tolerance, because Pinkie sprite is very wide.
+      b.x1 += 32; b.x2 -= 32;
+      return b;
+    }
+
+    function intersectsWith(me, target) {
+      var b1 = bounds(me), b2 = bounds(target);
+      return !(b2.x1 > b1.x2 || b2.x2 < b1.x1 ||
+               b2.y1 > b1.y2 || b2.y2 < b1.y1);
+    }
+
+    window.intersects = function(me, selector) {
+      var targets = canvas.querySelectorAll(selector);
+      return toArray(targets).filter(intersectsWith.bind(null, me));
+    }
+  })();
+    </script>
+    <script type="text/javascript" src="../src/modules/editor/client.js"></script>
+  </body>
+</html>
