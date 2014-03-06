@@ -161,7 +161,7 @@ function Editor(slide, mode) {
     gutters: ["cm-errors"],
     // lineNumbers: true,
     lineWrapping: false,
-    matchBrackets: true,
+    // matchBrackets: true,
     autoCloseBrackets: true,
     styleActiveLine: true,
     theme: "xq-light"
