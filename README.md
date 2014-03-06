@@ -17,14 +17,11 @@ Editor cheat sheet:
 * `Ctrl-Q` renames the variable at point.
 * `Alt-.` jumps to the definition of the token at point.
 * `Alt-,` jumps back.
-
 * `Ctrl-K` and `Ctrl-Y` kills to end of line and yanks from the kill buffer as in Most Holy Emacs.
 * `Ctrl-A` and `Ctrl-E` similarly moves cursor to start and end of line.
 * `Tab` will indent the current line to where it's supposed to be.
-
 * `Alt-Space` sends a space bar keypress event to the HTML document.
 * etc. for enter and cursor keys.
-
 * Finally, `Esc` moves focus from the editor back to the slide deck, so you can change slides etc. (Also, if the slide deck is active, `Tab` should focus the editor.)
 
 License
