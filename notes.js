@@ -45,6 +45,11 @@ this.s.onNext("sees");
 this.s.onNext("all");
 this.s.onCompleted();
 
+// Scan
+Rx.Observable.interval(500)
+  .scan(0, (acc, next) => acc * next).log();
+
+
 // --- Actual game:
 
 var canvas = document.getElementById("canvas");
