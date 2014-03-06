@@ -33,6 +33,12 @@ function Editor(slide, mode) {
   const target = slide.querySelector(".slideContainer");
   const initialCode = target.innerHTML;
 
+  this.onTabClose = () => {
+    if (!this.cm.isClean()) {
+      return "The current buffer has modifications.";
+    }
+  };
+
   // --- Comms
 
   this.send = (message) => {
@@ -231,11 +237,16 @@ function Editor(slide, mode) {
       }
     }, this);
     this.cm.refresh();
+    this.cleanupHandler = events.on(window, "beforeunload", this.onTabClose, this);
   }
 
   // --- cleanup
 
   this.cleanup = () => {
+    if (this.cleanupHandler) {
+      events.off(this.cleanupHandler);
+      this.cleanupHandler = null;
+    }
     this.cm = null;
     target.innerHTML = initialCode;
     target.classList.remove("editor");
