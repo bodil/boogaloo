@@ -44,61 +44,22 @@
       <section data-image="m/erik.jpg" class="photo"></section>
 
       <section data-image="m/dhh.jpg" class="photo white align-bottom">
-        <h4>Reactive Extensions</h4>
+        <h4>PONY FOOD</h4>
       </section>
 
       <section data-editor="text/javascript" data-href="game/rxtut/rx.html">
-      </section>
-
-      <section data-editor="text/javascript" data-href="game/rxtut/rx.html">
-        Rx.Observable.fromArray([
-        ]).log();
-      </section>
-
-      <section data-editor="text/javascript" data-href="game/rxtut/rx.html">
-        Rx.Observable.
-      </section>
-
-      <section data-editor="text/javascript" data-href="game/rxtut/rx.html">
-        Rx.Observable.
-      </section>
-
-      <section data-editor="text/javascript" data-href="game/rxtut/rx.html">
-        var ponies = Rx.Observable.fromArray([
+        var ponies = [
           "Fluttershy",
           "Twilight Sparkle",
           "Applejack",
           "Rarity",
           "Rainbow Dash",
           "Pinkie Pie"
-        ]);
-      </section>
+        ];
 
-      <section data-editor="text/javascript" data-href="game/rxtut/rx.html">
-        var ponies = Rx.Observable.fromArray([
-          "Fluttershy",
-          "Twilight Sparkle",
-          "Applejack",
-          "Rarity",
-          "Rainbow Dash",
-          "Pinkie Pie"
-        ]);
-      </section>
-
-      <section data-editor="text/javascript" data-href="game/rxtut/rx.html">
-        var ponies = Rx.Observable.fromArray([
-          "Fluttershy",
-          "Twilight Sparkle",
-          "Applejack",
-          "Rarity",
-          "Rainbow Dash",
-          "Pinkie Pie"
-        ]);
-
-        var ponyTime = Rx.Observable.zip(
-          Rx.Observable.interval(500),
-          ponies, (tick, i) => i
-        ).log();
+        var ponyTime = Ponyfood
+          .sequentially(500, ponies)
+          .log();
 
         // ponyTime
         // .filter((pony) => /e$/.test(pony))
@@ -107,11 +68,9 @@
       </section>
 
       <section data-editor="text/javascript" data-href="game/rxtut/rx.html">
-        this.s = new Rx.Subject();
-      </section>
-
-      <section data-editor="text/javascript" data-href="game/rxtut/rx.html">
-        Rx.Observable.interval(500);
+        var cutePony  = new Ponyfood.Bus();
+        cutePony.log()
+        cutePony.push("om nom")
       </section>
 
       <section data-editor="text/javascript" data-href="game/game.html" data-reload>
@@ -126,9 +85,9 @@
         var ground = canvas.querySelector(".ground");
 
         function bindKey(key) {
-          var sub = new Rx.Subject();
+          var sub = new Ponyfood.Bus();
           Mousetrap.bind(key, () => {
-            sub.onNext(key);
+            sub.push(key);
           });
           return sub;
         }
@@ -208,24 +167,21 @@
         }
 
         function nodeStream(name, physics, y, time, speed) {
-          return Rx.Observable.interval(time)
+          return Ponyfood.interval(time)
             .flatMap(() => {
               var node = document.createElement("div");
               node.className = name;
               canvas.appendChild(node);
 
-              return Rx.Observable.interval(33)
+              return Ponyfood.interval(33)
                 .scan({ x: 768, y: y, vx: speed, vy: 0, node: node}, physics)
                 .takeWhile((n) => onscreen(n) && !canvas.querySelector("#pinkie.gameover"))
-                .do(function() {}, function() {}, function() {
-                  canvas.removeChild(node);
-                });
             })
         }
 
         function gameOver() {
           new Audio("sfx/gameover.mp3").play();
-          return Rx.Observable.interval(33)
+          return Ponyfood.interval(33)
             .scan({ x: pinkie.offsetLeft, y: pinkie.offsetTop - 276, vx: 0, vy: -15,
                     gameOver: true},
                   gameOverPhysics);
@@ -234,22 +190,26 @@
         // Rx.Observable.interval(33)
         bindKey("space")
           // .do(() => new Audio("sfx/jump.mp3").play())
-          .buffer(Rx.Observable.interval(33))
+          .bufferWithTime(33, true)
           .scan({ x: 64, y: 0, vx: 0, vy: 0}, pinkiePhysics)
           .takeWhile(() => intersects(pinkie, ".hater").length === 0)
-          .concat(Rx.Observable.defer(gameOver))
+          .concat(Ponyfood.once().flatMap(gameOver))
           .takeWhile(onscreen)
-          .subscribe(renderPinkie);
+          .onValue(renderPinkie);
 
-        Rx.Observable.interval(33)
+        Ponyfood.interval(33)
+          .scan(0, (x) => x + 1)
           .map((x) => ((x % 64) * -8) - 128)
-          .subscribe((x) => ground.style.left = x + "px");
+          .onValue((x) => ground.style.left = x + "px");
 
 
         nodeStream("coin", coinPhysics, 96 * Math.random(), 5000, -6)
-          .subscribe(renderNode);
+          .doAction(renderNode)
+          .map(".node").onEnd(canvas, "removeChild")
+
         nodeStream("hater", velocity, 300, 4000, -8)
-          .subscribe(renderNode);
+          .doAction(renderNode)
+          .map(".node").onEnd(canvas, "removeChild")
       </section>
 
       <section data-background="m/hipster-pinkie.jpg" style="text-align: center">

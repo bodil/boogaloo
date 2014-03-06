@@ -7,11 +7,7 @@
     <meta name="viewport" content="width=device-width">
     <link rel="stylesheet" type="text/css" href="rx.css">
     <script type="text/javascript" src="../lib/traceur-runtime.js"></script>
-    <script type="text/javascript" src="../lib/rx.js"></script>
-    <script type="text/javascript" src="../lib/rx.async.js"></script>
-    <script type="text/javascript" src="../lib/rx.binding.js"></script>
-    <script type="text/javascript" src="../lib/rx.time.js"></script>
-    <script type="text/javascript" src="../lib/rx.coincidence.js"></script>
+    <script type="text/javascript" src="../lib/ponyfood.js"></script>
   </head>
   <body>
     <div id="canvas">
@@ -35,20 +31,22 @@
 
     var log = document.getElementById("log");
 
-    Rx.Observable.prototype.log = function() {
-      this.subscribe(function(i) {
+    Ponyfood.Observable.prototype.log = function() {
+      this.onValue(function(i) {
         var p = document.createElement("p");
         p.className = "output";
         var t = document.createTextNode(JSON.stringify(i));
         p.appendChild(t);
         log.appendChild(p);
-      }, function(err) {
+      })
+      this.onError(function(err) {
         var p = document.createElement("p");
         p.className = "error";
         var t = document.createTextNode(JSON.stringify(err));
         p.appendChild(t);
         log.appendChild(p);
-      }, function() {
+      })
+      this.onEnd(function() {
         var p = document.createElement("p");
         p.className = "complete";
         log.appendChild(p);
