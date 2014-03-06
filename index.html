@@ -20,164 +20,258 @@
   </head>
   <body>
 
-    <div id="slides" data-background="m/splash.png">
+    <div id="slides" data-background="m/glasses.jpg">
 
-      <section data-editor="text/javascript" data-href="game/game.html">
-
-var canvas = document.getElementById("canvas");
-var pinkie = document.getElementById("pinkie");
-var ground = canvas.querySelector(".ground");
-
-function bindKey(key) {
-  var sub = new Rx.Subject();
-  Mousetrap.bind(key, () => {
-    sub.onNext(key);
-  });
-  return sub;
-}
-
-function velocity(oldP) {
-  var p = Object.create(oldP);
-  p.x += p.vx; p.y += p.vy;
-  return p;
-}
-
-function pinkiePhysics(oldP, keys) {
-  // Apply Pinkie's velocity to her position.
-  var p = velocity(oldP);
-
-  // Apply gravity to Pinkie's velocity.
-  p.vy += 0.98;
-
-  // AS Pinkie Pie,
-  // GIVEN that I'm falling
-  // WHEN I hit the ground
-  // THEN I stop.
-  if (p.y >= 0 && p.vy > 0) {
-    p.y = 0; p.vy = 0;
-  }
-
-  // If Pinkie is on the ground and space has been pressed, JUMP.
-  if (keys[0] === "space") {
-    // p.vy = -20; // wheeee infinite jump
-    if (p.y === 0) {
-      p.vy = -20;
-      new Audio("sfx/jump.mp3").play();
-    }
-  }
-
-  return p;
-}
-
-function renderPinkie(p) {
-  // Apply Pinkie's position to her DOM element.
-  pinkie.style.left = Math.floor(p.x) + "px";
-  pinkie.style.top = Math.floor(p.y + 276) + "px";
-
-  // If Pinkie is airborne, render her as jumping.
-  // If game over, it's game over.
-  pinkie.className = p.gameOver ? "gameover" : (p.y < 0) ? "jumping" : "";
-}
-
-function onscreen(n) {
-  return !(n.x < -300 || n.y < -1000 || n.y > 1000);
-}
-
-function renderNode(n) {
-  n.node.style.left = Math.floor(n.x) + "px";
-  n.node.style.top = Math.floor(n.y) + "px";
-}
-
-function coinPhysics(oldC) {
-  // Apply velocity to position.
-  var c = velocity(oldC);
-
-  // If Pinkie touches the coin, ding it!
-  if (c.vy === 0 && intersects(c.node, "#pinkie").length) {
-    new Audio("sfx/coin.mp3").play();
-    c.vx = 0; c.vy = -1;
-  }
-  if (c.vy < 0) {
-    c.vy = c.vy * 2;
-  }
-
-  return c;
-}
-
-function gameOverPhysics(oldC) {
-  var c = velocity(oldC);
-  c.vy += 0.5;
-  return c;
-}
-
-function nodeStream(name, physics, y, time, speed) {
-  return Rx.Observable.interval(time)
-    .flatMap(() => {
-      var node = document.createElement("div");
-      node.className = name;
-      canvas.appendChild(node);
-
-      return Rx.Observable.interval(33)
-        .scan({ x: 768, y: y, vx: speed, vy: 0, node: node}, physics)
-        .takeWhile((n) => onscreen(n) && !canvas.querySelector("#pinkie.gameover"))
-        .do(function() {}, function() {}, function() {
-          canvas.removeChild(node);
-        });
-    })
-}
-
-function gameOver() {
-  new Audio("sfx/gameover.mp3").play();
-  return Rx.Observable.interval(33)
-    .scan({ x: pinkie.offsetLeft, y: pinkie.offsetTop - 276, vx: 0, vy: -15,
-            gameOver: true},
-          gameOverPhysics);
-}
-
-// Rx.Observable.interval(33)
-bindKey("space")
-  // .do(() => new Audio("sfx/jump.mp3").play())
-  .buffer(Rx.Observable.interval(33))
-  .scan({ x: 64, y: 0, vx: 0, vy: 0}, pinkiePhysics)
-  .takeWhile(() => intersects(pinkie, ".hater").length === 0)
-  .concat(Rx.Observable.defer(gameOver))
-  .takeWhile(onscreen)
-  .subscribe(renderPinkie);
-
-Rx.Observable.interval(33)
-  .map((x) => ((x % 64) * -8) - 128)
-  .subscribe((x) => ground.style.left = x + "px");
-
-
-nodeStream("coin", coinPhysics, 96 * Math.random(), 5000, -6)
-  .subscribe(renderNode);
-nodeStream("hater", velocity, 300, 4000, -8)
-  .subscribe(renderNode);
-
+      <section data-image="m/have-fixie-will-hip.jpg" class="white photo">
+        <h4>what every hipster should know about</h4>
+        <h2>FUNCTIONAL REACTIVE</h2>
+        <h2>PROGRAMMING</h2>
+        <h4 class="attribution">@bodil</h4>
       </section>
 
-      <section data-background="m/party-cannon-3.jpg">
-        <h3>hai lol!</h3>
-        <ul>
-          <li>I am a teapot</li>
-          <li>short and stout</li>
-          <li>this is my handle</li>
-          <li>this is my spout</li>
-        </ul>
+      <section data-image="m/beard-off.jpg" class="white photo">
+        <h6>kleisli arrows</h6>
+        <h6>yoneda lemma</h6>
+        <h6>cofree comonads</h6>
+        <h6>zygohistomorphic prepromorphisms</h6>
       </section>
 
-      <section data-background="m/moby-dick.jpg">
-        <h3>hai lol!</h3>
-        <ul>
-          <li>I am a teapot</li>
-          <li>short and stout</li>
-          <li>this is my handle</li>
-          <li>this is my spout</li>
-        </ul>
+      <section data-image="m/joe.jpg" class="white photo align-bottom erlang-the-movie">
+        <p>FUNCTIONAL REACTIVE PROGRAMMING</p>
+        <h2>NOW!</h2>
+      </section>
+
+      <section data-image="m/erik.jpg" class="photo"></section>
+
+      <section data-image="m/dhh.jpg" class="photo white align-bottom">
+        <h4>Reactive Extensions</h4>
+      </section>
+
+      <section data-editor="text/javascript" data-href="game/rxtut/rx.html">
+      </section>
+
+      <section data-editor="text/javascript" data-href="game/rxtut/rx.html">
+        Rx.Observable.fromArray([
+        ]).log();
+      </section>
+
+      <section data-editor="text/javascript" data-href="game/rxtut/rx.html">
+        Rx.Observable.
+      </section>
+
+      <section data-editor="text/javascript" data-href="game/rxtut/rx.html">
+        Rx.Observable.
+      </section>
+
+      <section data-editor="text/javascript" data-href="game/rxtut/rx.html">
+        var ponies = Rx.Observable.fromArray([
+          "Fluttershy",
+          "Twilight Sparkle",
+          "Applejack",
+          "Rarity",
+          "Rainbow Dash",
+          "Pinkie Pie"
+        ]);
+      </section>
+
+      <section data-editor="text/javascript" data-href="game/rxtut/rx.html">
+        var ponies = Rx.Observable.fromArray([
+          "Fluttershy",
+          "Twilight Sparkle",
+          "Applejack",
+          "Rarity",
+          "Rainbow Dash",
+          "Pinkie Pie"
+        ]);
+      </section>
+
+      <section data-editor="text/javascript" data-href="game/rxtut/rx.html">
+        var ponies = Rx.Observable.fromArray([
+          "Fluttershy",
+          "Twilight Sparkle",
+          "Applejack",
+          "Rarity",
+          "Rainbow Dash",
+          "Pinkie Pie"
+        ]);
+
+        var ponyTime = Rx.Observable.zip(
+          Rx.Observable.interval(500),
+          ponies, (tick, i) => i
+        ).log();
+
+        // ponyTime
+        // .filter((pony) => /e$/.test(pony))
+        // .map((pony) => "I love " + pony)
+        // .log();
+      </section>
+
+      <section data-editor="text/javascript" data-href="game/rxtut/rx.html">
+        this.s = new Rx.Subject();
+      </section>
+
+      <section data-editor="text/javascript" data-href="game/game.html" data-reload>
+        var canvas = document.getElementById("canvas");
+        var pinkie = document.getElementById("pinkie");
+        var ground = canvas.querySelector(".ground");
+      </section>
+
+      <section data-editor="text/javascript" data-href="game/game.html" data-reload>
+        var canvas = document.getElementById("canvas");
+        var pinkie = document.getElementById("pinkie");
+        var ground = canvas.querySelector(".ground");
+
+        function bindKey(key) {
+          var sub = new Rx.Subject();
+          Mousetrap.bind(key, () => {
+            sub.onNext(key);
+          });
+          return sub;
+        }
+
+        function velocity(oldP) {
+          var p = Object.create(oldP);
+          p.x += p.vx; p.y += p.vy;
+          return p;
+        }
+
+        function pinkiePhysics(oldP, keys) {
+          // Apply Pinkie's velocity to her position.
+          var p = velocity(oldP);
+
+          // Apply gravity to Pinkie's velocity.
+          p.vy += 0.98;
+
+          // AS Pinkie Pie,
+          // GIVEN that I'm falling
+          // WHEN I hit the ground
+          // THEN I stop.
+          if (p.y >= 0 && p.vy > 0) {
+            p.y = 0; p.vy = 0;
+          }
+
+          // If Pinkie is on the ground and space has been pressed, JUMP.
+          if (keys[0] === "space") {
+            // p.vy = -20; // wheeee infinite jump
+            if (p.y === 0) {
+              p.vy = -20;
+              new Audio("sfx/jump.mp3").play();
+            }
+          }
+
+          return p;
+        }
+
+        function renderPinkie(p) {
+          // Apply Pinkie's position to her DOM element.
+          pinkie.style.left = Math.floor(p.x) + "px";
+          pinkie.style.top = Math.floor(p.y + 276) + "px";
+
+          // If Pinkie is airborne, render her as jumping.
+          // If game over, it's game over.
+          pinkie.className = p.gameOver ? "gameover" : (p.y < 0) ? "jumping" : "";
+        }
+
+        function onscreen(n) {
+          return !(n.x < -300 || n.y < -1000 || n.y > 1000);
+        }
+
+        function renderNode(n) {
+          n.node.style.left = Math.floor(n.x) + "px";
+          n.node.style.top = Math.floor(n.y) + "px";
+        }
+
+        function coinPhysics(oldC) {
+          // Apply velocity to position.
+          var c = velocity(oldC);
+
+          // If Pinkie touches the coin, ding it!
+          if (c.vy === 0 && intersects(c.node, "#pinkie").length) {
+            new Audio("sfx/coin.mp3").play();
+            c.vx = 0; c.vy = -1;
+          }
+          if (c.vy < 0) {
+            c.vy = c.vy * 2;
+          }
+
+          return c;
+        }
+
+        function gameOverPhysics(oldC) {
+          var c = velocity(oldC);
+          c.vy += 0.5;
+          return c;
+        }
+
+        function nodeStream(name, physics, y, time, speed) {
+          return Rx.Observable.interval(time)
+            .flatMap(() => {
+              var node = document.createElement("div");
+              node.className = name;
+              canvas.appendChild(node);
+
+              return Rx.Observable.interval(33)
+                .scan({ x: 768, y: y, vx: speed, vy: 0, node: node}, physics)
+                .takeWhile((n) => onscreen(n) && !canvas.querySelector("#pinkie.gameover"))
+                .do(function() {}, function() {}, function() {
+                  canvas.removeChild(node);
+                });
+            })
+        }
+
+        function gameOver() {
+          new Audio("sfx/gameover.mp3").play();
+          return Rx.Observable.interval(33)
+            .scan({ x: pinkie.offsetLeft, y: pinkie.offsetTop - 276, vx: 0, vy: -15,
+                    gameOver: true},
+                  gameOverPhysics);
+        }
+
+        // Rx.Observable.interval(33)
+        bindKey("space")
+          // .do(() => new Audio("sfx/jump.mp3").play())
+          .buffer(Rx.Observable.interval(33))
+          .scan({ x: 64, y: 0, vx: 0, vy: 0}, pinkiePhysics)
+          .takeWhile(() => intersects(pinkie, ".hater").length === 0)
+          .concat(Rx.Observable.defer(gameOver))
+          .takeWhile(onscreen)
+          .subscribe(renderPinkie);
+
+        Rx.Observable.interval(33)
+          .map((x) => ((x % 64) * -8) - 128)
+          .subscribe((x) => ground.style.left = x + "px");
+
+
+        nodeStream("coin", coinPhysics, 96 * Math.random(), 5000, -6)
+          .subscribe(renderNode);
+        nodeStream("hater", velocity, 300, 4000, -8)
+          .subscribe(renderNode);
+      </section>
+
+      <section data-background="m/hipster-pinkie.jpg" style="text-align: center">
+        <h3>Thank you!</h3>
+        <p><img src="m/such-pinkie.png"></p>
+        <p>@bodil</p>
+        <p style="font-size: 0.8em">
+          <a href="https://github.com/bodil/boogaloo">https://github.com/bodil/boogaloo</a>
+        </p>
+        <div style="position: absolute; left: 0.5em; bottom: 0.5em"
+             class="doge-widget-wrapper">
+          <form method='get' action='https://www.dogeapi.com/checkout'>
+            <input type='hidden' name='widget_type' value='donate'>
+            <input type='hidden' name='payment_address' value='D99Ayqb1Q9nm5bzpvmDpc34CsrxYWyjL1b'>
+            <div class='doge-widget' style='display:none;'></div>
+          </form>
+        </div>
+      </section>
+
+      <section data-background="m/moby-dick.jpg" class="photo white">
+        <h3>QUESTIONS?</h3>
       </section>
 
     </div>
 
     <script type="text/javascript" src="build/slide.js"></script>
+    <script async src="https://www.dogeapi.com/widget/dogeapi.js" type="text/javascript"></script>
   </body>
 </html>

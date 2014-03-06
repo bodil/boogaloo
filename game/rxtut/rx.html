@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>hai lol</title>
+    <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" type="text/css" href="rx.css">
+    <script type="text/javascript" src="../lib/traceur-runtime.js"></script>
+    <script type="text/javascript" src="../lib/rx.js"></script>
+    <script type="text/javascript" src="../lib/rx.async.js"></script>
+    <script type="text/javascript" src="../lib/rx.binding.js"></script>
+    <script type="text/javascript" src="../lib/rx.time.js"></script>
+    <script type="text/javascript" src="../lib/rx.coincidence.js"></script>
+  </head>
+  <body>
+    <div id="canvas">
+      <div id="log">
+      </div>
+    </div>
+
+    <script type="text/javascript">
+  (function() {
+    function resizeCanvas() {
+      var canvas = document.getElementById("canvas");
+      var scale = window.innerHeight / canvas.clientHeight;
+      canvas.style.mozTransform = "scale(" + scale + ")";
+      canvas.style.webkitTransform = "scale(" + scale + ")";
+      canvas.style.transform = "scale(" + scale + ")";
+      canvas.style.width = (window.innerWidth / scale) + "px";
+    }
+
+    resizeCanvas();
+    window.addEventListener("resize", resizeCanvas);
+
+    var log = document.getElementById("log");
+
+    Rx.Observable.prototype.log = function() {
+      this.subscribe(function(i) {
+        var p = document.createElement("p");
+        p.className = "output";
+        var t = document.createTextNode(JSON.stringify(i));
+        p.appendChild(t);
+        log.appendChild(p);
+      }, function(err) {
+        var p = document.createElement("p");
+        p.className = "error";
+        var t = document.createTextNode(JSON.stringify(err));
+        p.appendChild(t);
+        log.appendChild(p);
+      }, function() {
+        var p = document.createElement("p");
+        p.className = "complete";
+        log.appendChild(p);
+      })
+    };
+  })();
+    </script>
+    <script type="text/javascript" src="../../src/modules/editor/client.js"></script>
+  </body>
+</html>

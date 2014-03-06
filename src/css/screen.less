@@ -80,6 +80,14 @@ strong {
     letter-spacing: 0.05em;
 }
 
+a {
+    color: black;
+}
+
+.attribution {
+    font-size: 0.9em;
+}
+
 #slides {
     z-index: 1;
     position: fixed;
@@ -109,9 +117,11 @@ strong {
 }
 
 #slides section {
-    z-index: 10;
-    background: rgba(255, 255, 255, 0.8);
+    background-color: rgba(255, 255, 255, 0.8);
     background-size: cover;
+    background-position: 50% 50%;
+
+    z-index: 10;
     visibility: hidden;
     position: absolute;
     width: 80%;
@@ -225,6 +235,47 @@ strong {
         .CodeMirror, .loaderFrame, .targetFrame iframe {
             box-shadow: 0 0.1em 0.2em rgba(0, 0, 0, 0.6);
             border-radius: 0.1em;
+        }
+    }
+
+    &.photo {
+        background-size: contain;
+        background-color: rgba(0,0,0,0);
+        background-repeat: no-repeat;
+    }
+
+    &.white {
+        text-align: center;
+
+        h1, h2, h3, h4, h5, h6, p, a {
+            color: white;
+            text-shadow: 0 -0.05em 0.1em black, 0 0.05em 0.1em black, 0 0.1em 0.3em black;
+            background: none;
+            font-weight: normal;
+        }
+    }
+
+    &.align-bottom {
+        -webkit-box-pack: end;
+        -webkit-box-align: end;
+        -moz-box-pack: end;
+        -moz-box-align: end;
+        box-pack: end;
+        box-align: end;
+        padding-bottom: 0.5em;
+    }
+
+    &.erlang-the-movie {
+        h1, h2, h3, h4, h5, h6, p, a {
+            font-weight: bolder;
+            -webkit-transform: scale(0.8, 1);
+            -moz-transform: scale(0.8, 1);
+            transform: scale(0.8, 1);
+            margin: 0;
+        }
+        p {
+            font-size: 0.9em;
+            margin: 0 -6em;
         }
     }
 }

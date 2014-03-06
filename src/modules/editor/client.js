@@ -1,8 +1,10 @@
 /*global setTimeout */
 
 (function() {
+  var preservedState = {};
   function evalCode(code) {
     setTimeout(function() {
+      var module = preservedState;
       eval(code);
     }, 1);
   }

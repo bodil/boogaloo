@@ -24,6 +24,7 @@ var events = require("../lib/events");
 var text = require("../lib/text");
 var emacs = require("./editor/emacs");
 var es6ify = require("./editor/es6ify");
+var esprima = require("./editor/esprima");
 var Spinner = require("spin.js");
 var _ = require("underscore");
 
@@ -62,15 +63,49 @@ function Editor(slide, mode) {
     const js = this.compile();
     if (!js) return;
 
-    this.targetFrame.src = args.href;
-    setTimeout((() => {
-      events.until(this.targetFrame.contentWindow, "message", function(e) {
-        if (e.data === "rdy lol") {
-          this.send({code: js});
-          return true;
+    if (args.reload !== undefined) {
+      this.targetFrame.src = args.href;
+      setTimeout((() => {
+        events.until(this.targetFrame.contentWindow, "message", function(e) {
+          if (e.data === "rdy lol") {
+            this.send({code: js});
+            return true;
+          }
+        }, this);
+      }).bind(this), 100);
+    } else {
+      this.send({code: js});
+    }
+  };
+
+  this.evalFormAtPoint = (cm) => {
+    // FIXME select behaviour by language, don't assume JS
+    const src = cm.getDoc().getValue();
+    const tree = esprima.parse(src, {
+      tolerant: true, range: true
+    });
+    const cur = cm.indexFromPos(cm.getCursor());
+    tree.body
+      .filter((n) => cur >= n.range[0] && cur <= n.range[1])
+      .forEach((n) => {
+        cm.getDoc().setSelection(cm.posFromIndex(n.range[0]),
+                                 cm.posFromIndex(n.range[1]));
+        var js = es6ify.compile(cm.getDoc().getSelection());
+        if (js.errors.length) {
+          new Audio(require("./editor/smb_bump.mp3")).play();
+          let marker = document.createElement("img");
+          marker.title = js.errors[0];
+          marker.classList.add("cm-error");
+          this.cm.setGutterMarker(cm.posFromIndex(n.range[1]).line, "cm-errors", marker);
+        } else {
+          console.log(js.js);
+          this.send({code: js.js});
         }
-      }, this);
-    }).bind(this), 100);
+      });
+  };
+
+  this.reloadFrame = (cm) => {
+    this.targetFrame.src = args.href;
   };
 
   // --- keybindings
@@ -81,6 +116,8 @@ function Editor(slide, mode) {
 
   const keymap = {};
   keymap["Ctrl-S"] = this.evalInFrame.bind(this);
+  keymap["Ctrl-D"] = this.evalFormAtPoint.bind(this);
+  keymap["Ctrl-R"] = this.reloadFrame.bind(this);
   keymap["Alt-Space"] = this.iframeBind("space");
   keymap["Alt-Enter"] = this.iframeBind("enter");
   keymap["Alt-Up"] = this.iframeBind("up");
@@ -116,7 +153,7 @@ function Editor(slide, mode) {
     mode: mode,
     extraKeys: keymap,
     gutters: ["cm-errors"],
-    lineNumbers: true,
+    // lineNumbers: true,
     lineWrapping: false,
     matchBrackets: true,
     autoCloseBrackets: true,
@@ -190,10 +227,6 @@ function Editor(slide, mode) {
         this.targetFrame.style.display = "";
         this.targetContainer.removeChild(this.loaderFrame);
         this.loaderFrame = this.spinner = null;
-
-        const js = this.compile();
-        if (js) this.send({code: js});
-
         return true;
       }
     }, this);

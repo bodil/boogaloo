@@ -1,0 +1,63 @@
+@import "../../src/css/fonts/Helvetica/helvetica.css";
+
+*, *:before, *:after {
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+body {
+    font-family: "Helvetica Neue LT Std";
+    font-size: 24pt;
+    line-height: 1.2em;
+}
+
+#canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 512px;
+    height: 512px;
+    padding: 0.5em 1em;
+    background-image: url(../../m/dhh-sees-all.jpg);
+    background-size: cover;
+    background-position: 50% 50%;
+    overflow: hidden;
+    -moz-transform-origin: 0 0;
+    -webkit-transform-origin: 0 0;
+    transform-origin: 0 0;
+    -webkit-filter: saturate(200%) grayscale(25%) sepia(10%);
+    -moz-filter: saturate(200%) grayscale(25%) sepia(10%);
+    filter: saturate(200%) grayscale(25%) sepia(10%);
+}
+
+#log {
+    position: absolute;
+    width: 100%;
+    padding-right: 2em;
+    bottom: 0;
+}
+
+p {
+    background: rgba(255, 255, 255, 0.8);
+    padding: 0.3em 0.8em;
+    margin-bottom: 0.3em;
+}
+
+p.output:before {
+    color: orange;
+    content: "Output: ";
+}
+
+p.error:before {
+    color: red;
+    content: "Error: ";
+}
+
+p.complete:before {
+    color: green;
+    content: "Completed. ";
+}
