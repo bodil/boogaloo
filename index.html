@@ -217,7 +217,7 @@
               return Rx.Observable.interval(33)
                 .scan({ x: 768, y: y, vx: speed, vy: 0, node: node}, physics)
                 .takeWhile((n) => onscreen(n) && !canvas.querySelector("#pinkie.gameover"))
-                .do(function() {}, function() {}, function() {
+                .finally(function() {
                   canvas.removeChild(node);
                 });
             })
