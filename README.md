@@ -27,6 +27,8 @@ Editor cheat sheet:
 License
 -------
 
+Unless otherwise noted in source code, the GPL v3 applies:
+
 Copyright 2014 Bodil Stokke
 
 This program is free software: you can redistribute it and/or modify
