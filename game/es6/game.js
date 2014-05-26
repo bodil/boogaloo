@@ -1,11 +1,47 @@
-// --- Actual game:
+/*global React, Rx, Audio */
+
+function deepCopy(target, obj) {
+  for (let prop in obj)
+    if (obj.hasOwnProperty(prop))
+      if (typeof obj[prop] === "object")
+	target[prop] = deepCopy({}, obj[prop]);
+  else target[prop] = obj[prop];
+}
+
+function assoc(...args) {
+  let out = {};
+  for (let i = 0; i < args.length; i++)
+    deepCopy(out, args[i]);
+  return out;
+}
+
+function bounds(me) {
+  return {
+    x1: me.x + (me.baseX || 0),
+    y1: me.y + (me.baseY || 0),
+    x2: me.x + (me.baseX || 0) + 100,
+    y2: me.y + (me.baseY || 0) + 100
+  };
+}
+
+function intersects(me, target) {
+  let b1 = bounds(me), b2 = bounds(target);
+  return !(b2.x1 > b1.x2 || b2.x2 < b1.x1 ||
+	   b2.y1 > b1.y2 || b2.y2 < b1.y1);
+}
+
+const canvas = document.getElementById("canvas");
+
+function onscreen(node) {
+  return !(node.x < -300 || node.y < -1000 || node.y > 1000);
+}
 
 function makeElement(node) {
   return React.DOM.div({
     className: node.id,
     style: {
-      left: (node.x + (node.baseX || 0)) | 0 + "px",
-      top: (node.y + (node.baseY || 0)) | 0 + "px"
+      left: Math.floor(node.x + (node.baseX || 0)) + "px",
+      top: Math.floor(node.y + (node.baseY || 0)) + "px"
     }
   });
 }
@@ -17,11 +53,19 @@ function renderScene(nodes) {
   );
 }
 
+function bindKey(key) {
+  let sub = new Rx.Subject();
+  Mousetrap.bind(key, () => {
+    sub.onNext(key);
+  });
+  return sub;
+}
+
 let groundStream = Rx.Observable.interval(33)
       .map((x) => ({
-    id: "ground",
-    baseX: -128,
-    x: ((x % 64) * -8), y: 384
+	id: "ground",
+	baseX: -128,
+	x: ((x % 64) * -8), y: 384
       }));
 
 function velocity(node) {

@@ -8,6 +8,7 @@
     <link rel="stylesheet" type="text/css" href="game.css">
     <script type="text/javascript" src="lib/traceur-runtime.js"></script>
     <script type="text/javascript" src="lib/mousetrap.js"></script>
+    <script type="text/javascript" src="lib/react.js"></script>
     <script type="text/javascript" src="lib/rx.js"></script>
     <script type="text/javascript" src="lib/rx.async.js"></script>
     <script type="text/javascript" src="lib/rx.binding.js"></script>
@@ -15,10 +16,7 @@
     <script type="text/javascript" src="lib/rx.coincidence.js"></script>
   </head>
   <body>
-    <div id="canvas">
-      <div class="ground"></div>
-      <div id="pinkie"></div>
-    </div>
+    <div id="canvas"></div>
 
     <script type="text/javascript">
   (function() {
@@ -34,34 +32,22 @@
     resizeCanvas();
     window.addEventListener("resize", resizeCanvas);
 
-    function toArray(indexable) {
-      var out = [], l = indexable.length, i;
-      for (i = 0; i < l; i++) {
-        out.push(indexable[i]);
-      }
-      return out;
-    }
+function bounds(me) {
+  return {
+    x1: me.x + (me.baseX || 0),
+    y1: me.y + (me.baseY || 0),
+    x2: me.x + (me.baseX || 0) + 64,
+    y2: me.y + (me.baseY || 0) + 64
+  };
+}
 
-    function bounds(node) {
-      var b = { x1: node.offsetLeft, y1: node.offsetTop };
-      b.x2 = b.x1 + node.offsetWidth;
-      b.y2 = b.y1 + node.offsetHeight;
-      // Add some tolerance, because Pinkie sprite is very wide.
-      b.x1 += 32; b.x2 -= 32;
-      return b;
-    }
-
-    function intersectsWith(me, target) {
-      var b1 = bounds(me), b2 = bounds(target);
-      return !(b2.x1 > b1.x2 || b2.x2 < b1.x1 ||
-               b2.y1 > b1.y2 || b2.y2 < b1.y1);
-    }
-
-    window.intersects = function(me, selector) {
-      var targets = canvas.querySelectorAll(selector);
-      return toArray(targets).filter(intersectsWith.bind(null, me));
-    }
-  })();
+function intersects(me, target) {
+  var b1 = bounds(me), b2 = bounds(target);
+  return !(b2.x1 > b1.x2 || b2.x2 < b1.x1 ||
+	   b2.y1 > b1.y2 || b2.y2 < b1.y1);
+}
+window.intersects = intersects;
+})();
     </script>
     <script type="text/javascript" src="../src/modules/editor/client.js"></script>
   </body>

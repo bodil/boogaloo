@@ -21,7 +21,7 @@
     transform-origin: 0 0;
 }
 
-#pinkie {
+.pinkie {
     position: absolute;
     width: 140px;
     height: 126px;
@@ -30,11 +30,11 @@
     background: url(gfx/pie-dash.gif);
 }
 
-#pinkie.jumping {
+.pinkie.jumping {
     background: url(gfx/pie-jump.gif) !important;
 }
 
-#pinkie.gameover {
+.pinkie.gameover {
     background: url(gfx/pie-oops.gif) !important;
 }
 
@@ -45,6 +45,7 @@
     top: 384px;
     left: -128px;
     background: url(gfx/map.png);
+    z-index: -1;
 }
 
 .hater {
