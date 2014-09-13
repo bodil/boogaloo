@@ -137,6 +137,7 @@ function Editor(slide, mode) {
   keymap["Ctrl-,"] = "toggleComment";
   keymap.Tab = (cm) => cm.indentLine(cm.getDoc().getCursor().line);
   keymap["Ctrl-\\"] = (cm) => CodeMirror.showHint(cm);
+  keymap["Ctrl-="] = (cm) => CodeMirror.showHint(cm);
   keymap["Ctrl-'"] = (cm) => {
     const cur = cm.getDoc().getCursor();
     const token = cm.getTokenAt(cur, true);
