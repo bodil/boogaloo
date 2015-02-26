@@ -124,14 +124,14 @@ function bindKey(key) {
       <section data-editor="text/javascript" data-href="game/game.html" data-reload>
 const canvas = document.getElementById("canvas");
 
-function hashArrayMappedTrie(target, obj) {
+function extend(target, obj) {
   for (let prop in obj) target[prop] = obj[prop];
 }
 
 function assoc() {
   let out = {};
   for (let i = 0; i < arguments.length; i++)
-    hashArrayMappedTrie(out, arguments[i]);
+    extend(out, arguments[i]);
   return out;
 }
 
