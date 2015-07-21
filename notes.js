@@ -12,12 +12,13 @@ function makeElement(node) {
 
 function renderScene(nodes) {
   return React.renderComponent(
-    React.DOM.div(null, nodes.map(makeElement)),
+    <div>{nodes.map(makeElement)}</div>,
+    // React.DOM.div(null, nodes.map(makeElement)),
     canvas
   );
 }
 
-let groundStream = Rx.Observable.interval(33)
+const groundStream = Rx.Observable.interval(33)
       .map((x) => ({
     id: "ground",
     baseX: -128,
@@ -31,22 +32,22 @@ function velocity(node) {
   });
 }
 
-let tick = bindKey("space")
+const tick = bindKey("space")
       .buffer(Rx.Observable.interval(33));
 
-let initialHater = {
+const initialHater = {
   id: "hater",
   vx: -8, vy: 0,
   x: 1600, y: 300
 };
 
-let haterStream = tick.scan(initialHater, (c, keys) => {
+const haterStream = tick.scan(initialHater, (c, keys) => {
   // Apply velocity to position.
   c = velocity(c);
-  return onscreen(c) ? c : initialHater;
+  return Object.freeze(onscreen(c) ? c : initialHater);
 });
 
-let pinkieStream = Rx.Observable.zipArray(tick, haterStream).scan({
+const pinkieStream = Rx.Observable.zipArray(tick, haterStream).scan({
   id: "pinkie",
   baseY: 276,
   x: 0, y: 0,
@@ -88,7 +89,7 @@ let pinkieStream = Rx.Observable.zipArray(tick, haterStream).scan({
 
   p.id = (p.y < 0) ? "pinkie jumping" : "pinkie";
 
-  return p;
+  return Object.freeze(p);
 }).takeWhile(onscreen);
 
 let initialCoin = {
@@ -110,7 +111,7 @@ let coinStream = pinkieStream.scan(initialCoin, (c, pinkie) => {
     c.vy = c.vy * 2;
   }
 
-  return onscreen(c) ? c : initialCoin;
+  return Object.freeze(onscreen(c) ? c : initialCoin);
 });
 
 Rx.Observable.zipArray(pinkieStream, groundStream, coinStream, haterStream)

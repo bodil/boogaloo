@@ -15,14 +15,6 @@
     <style type="text/css">
       body { visibility: hidden; background: black; }
     </style>
-    <!-- <script type="text/javascript"> -->
-    <!--   var _gaq = _gaq || []; _gaq.push(['_setAccount', 'UA-332358-13']); _gaq.push(['_setDomainName', 'bodil.org']); _gaq.push(['_trackPageview']); -->
-    <!--   (function() { -->
-    <!--   var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true; -->
-    <!--   ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js'; -->
-    <!--   var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s); -->
-    <!--   })(); -->
-    <!-- </script> -->
   </head>
   <body>
 
@@ -63,7 +55,7 @@
       </section>
 
       <section data-editor="text/javascript" data-href="game/rxtut/rx.html">
-        var ponies = Rx.Observable.fromArray([
+        const ponies = Rx.Observable.fromArray([
           "Fluttershy",
           "Twilight Sparkle",
           "Applejack",
@@ -74,7 +66,7 @@
       </section>
 
       <section data-editor="text/javascript" data-href="game/rxtut/rx.html">
-        var ponies = Rx.Observable.fromArray([
+        const ponies = Rx.Observable.fromArray([
           "Fluttershy",
           "Twilight Sparkle",
           "Applejack",
@@ -83,7 +75,7 @@
           "Pinkie Pie"
         ]);
 
-        var ponyTime = Rx.Observable.zip(
+        const ponyTime = Rx.Observable.zip(
           Rx.Observable.interval(500),
           ponies, (tick, i) => i
         ).log();
@@ -97,14 +89,13 @@
       <section data-editor="text/javascript" data-href="game/game.html" data-reload>
 const canvas = document.getElementById("canvas");
 
-function extend(target, obj) {
-  for (let prop in obj) target[prop] = obj[prop];
-}
-
-function assoc() {
-  let out = {};
-  for (let i = 0; i < arguments.length; i++)
-    extend(out, arguments[i]);
+function assoc(...args) {
+  const out = {};
+  for (let obj of args) {
+    for (let prop in obj) {
+      out[prop] = obj[prop];
+    }
+  }
   return out;
 }
 
@@ -113,25 +104,24 @@ function onscreen(node) {
 }
 
 function bindKey(key) {
-  let sub = new Rx.Subject();
+  const sub = new Rx.Subject();
   Mousetrap.bind(key, () => {
     sub.onNext(key);
   });
   return sub;
 }
-</section>
+      </section>
 
       <section data-editor="text/javascript" data-href="game/game.html" data-reload>
 const canvas = document.getElementById("canvas");
 
-function extend(target, obj) {
-  for (let prop in obj) target[prop] = obj[prop];
-}
-
-function assoc() {
-  let out = {};
-  for (let i = 0; i < arguments.length; i++)
-    extend(out, arguments[i]);
+function assoc(...args) {
+  const out = {};
+  for (let obj of args) {
+    for (let prop in obj) {
+      out[prop] = obj[prop];
+    }
+  }
   return out;
 }
 
@@ -140,7 +130,7 @@ function onscreen(node) {
 }
 
 function bindKey(key) {
-  let sub = new Rx.Subject();
+  const sub = new Rx.Subject();
   Mousetrap.bind(key, () => {
     sub.onNext(key);
   });
@@ -150,6 +140,7 @@ function bindKey(key) {
 function makeElement(node) {
   return React.DOM.div({
     className: node.id,
+    key: node.id,
     style: {
       left: (node.x + (node.baseX || 0)) | 0 + "px",
       top: (node.y + (node.baseY || 0)) | 0 + "px"
@@ -158,13 +149,13 @@ function makeElement(node) {
 }
 
 function renderScene(nodes) {
-  return React.renderComponent(
-    React.DOM.div(null, nodes.map(makeElement)),
+  return React.render(
+    &lt;div&gt;{nodes.map(makeElement)}&lt;/div&gt;,
     canvas
   );
 }
 
-let groundStream = Rx.Observable.interval(33)
+const groundStream = Rx.Observable.interval(33)
       .map((x) => ({
 	id: "ground",
 	baseX: -128,
@@ -178,22 +169,22 @@ function velocity(node) {
   });
 }
 
-let tick = bindKey("space")
+const tick = bindKey("space")
       .buffer(Rx.Observable.interval(33));
 
-let initialHater = {
+const initialHater = {
   id: "hater",
   vx: -8, vy: 0,
   x: 1600, y: 300
 };
 
-let haterStream = tick.scan(initialHater, (c, keys) => {
+const haterStream = tick.scan(initialHater, (c, keys) => {
   // Apply velocity to position.
   c = velocity(c);
-  return onscreen(c) ? c : initialHater;
+  return Object.freeze(onscreen(c) ? c : initialHater);
 });
 
-let pinkieStream = Rx.Observable.zipArray(tick, haterStream).scan({
+const pinkieStream = Rx.Observable.zipArray(tick, haterStream).scan({
   id: "pinkie",
   baseY: 276,
   x: 0, y: 0,
@@ -235,7 +226,7 @@ let pinkieStream = Rx.Observable.zipArray(tick, haterStream).scan({
 
   p.id = (p.y < 0) ? "pinkie jumping" : "pinkie";
 
-  return p;
+  return Object.freeze(p);
 }).takeWhile(onscreen);
 
 let initialCoin = {
@@ -257,7 +248,7 @@ let coinStream = pinkieStream.scan(initialCoin, (c, pinkie) => {
     c.vy = c.vy * 2;
   }
 
-  return onscreen(c) ? c : initialCoin;
+  return Object.freeze(onscreen(c) ? c : initialCoin);
 });
 
 Rx.Observable.zipArray(pinkieStream, groundStream, coinStream, haterStream)
@@ -303,7 +294,6 @@ Rx.Observable.zipArray(pinkieStream, groundStream, coinStream, haterStream)
 
     </div>
 
-    <script type="text/javascript" src="build/slide.js"></script>
-    <!-- <script async src="https://www.dogeapi.com/widget/dogeapi.js" type="text/javascript"></script> -->
+    <script type="text/javascript" src="dist/pink/pink.js"></script>
   </body>
 </html>

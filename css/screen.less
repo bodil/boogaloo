@@ -1,0 +1,30 @@
+body {
+    font-family: "Helvetica Neue LT Std";
+    font-size: 48pt;
+    line-height: 1.2em;
+}
+
+#slides section {
+    &.editor {
+        .CodeMirror {
+            font-family: "Inconsolata";
+            line-height: 1.2em;
+            font-size: 0.5em;
+
+        }
+    }
+
+    &.erlang-the-movie {
+        h1, h2, h3, h4, h5, h6, p, a {
+            font-weight: bolder;
+            -webkit-transform: scale(0.8, 1);
+            -moz-transform: scale(0.8, 1);
+            transform: scale(0.8, 1);
+            margin: 0;
+        }
+        p {
+            font-size: 0.9em;
+            margin: 0 -6em;
+        }
+    }
+}
