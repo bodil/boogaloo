@@ -11,7 +11,7 @@ function makeElement(node) {
 }
 
 function renderScene(nodes) {
-  return React.renderComponent(
+  return React.render(
     <div>{nodes.map(makeElement)}</div>,
     // React.DOM.div(null, nodes.map(makeElement)),
     canvas
